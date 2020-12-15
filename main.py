@@ -3,7 +3,7 @@ import sys
 
 import numpy
 import pygame
-
+import menu
 
 class Game:
     table = []
@@ -100,13 +100,8 @@ class render_game:
 
 
 if __name__ == "__main__":
-    ROW_COUNT = int(input("Define length of the matrix: "))
-    COLUMN_COUNT = int(input("Define width of the matrix: "))
-
-    # nr_players = int(input("Define the number of players: "))
-    nr_players = 2
+    ROW_COUNT,COLUMN_COUNT,nr_players = menu.main_menu()
     game = Game(ROW_COUNT, COLUMN_COUNT, nr_players)
-
     render = render_game(game)
     render.draw_board()
     current_player = 1
