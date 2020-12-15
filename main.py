@@ -1,4 +1,8 @@
+import math
+import sys
+
 import numpy
+import pygame
 
 
 class Game:
@@ -36,11 +40,15 @@ class Game:
             diags.extend([aux[i]])
 
         for n in diags:
-            counter = numpy.zeros(self.nr_players, dtype=int)
+            cnt = 0
+            last_player = 0
             for v in n.tolist():
                 if v != 0:
-                    counter[v - 1] = counter[v - 1] + 1
-                    if counter[v - 1] == 4:
+                    if last_player != v:
+                        cnt = 0
+                        last_player = v
+                    cnt += 1
+                    if cnt == 4:
                         return v
         return None
 
@@ -49,25 +57,80 @@ class Game:
             print(self.table[i])
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    n = int(input("Define length of the matrix: "))
-    m = int(input("Define width of the matrix: "))
-    nr_players = int(input("Define the number of players: "))
-    game = Game(n, m, nr_players)
+class render_game:
+    def __init__(self, game):
+        pygame.init()
 
+        self.COLORS = [(0, 0, 0), (255, 0, 0), (255, 255, 0), (0, 255, 0), (0, 255, 255)]
+        self.SQUARESIZE = 100
+
+        self.width = game.m * self.SQUARESIZE
+        self.height = (game.n + 1) * self.SQUARESIZE
+
+        size = (self.width, self.height)
+        self.screen = pygame.display.set_mode(size)
+
+    def draw_board(self):
+        self.RADIUS = int(self.SQUARESIZE / 2) - 5
+        self.OFFSET = int(self.SQUARESIZE / 2)
+        for r in range(game.n):
+            for c in range(game.m):
+                pygame.draw.rect(self.screen, (0, 0, 255),
+                                 (c * self.SQUARESIZE, (r + 1) * self.SQUARESIZE, self.SQUARESIZE, self.SQUARESIZE))
+                color = self.COLORS[game.table[r][c]]
+                pygame.draw.circle(self.screen, color,
+                                   (c * self.SQUARESIZE + self.OFFSET, (r + 1) * self.SQUARESIZE + self.OFFSET),
+                                   self.RADIUS)
+        pygame.display.update()
+
+    def draw_circle_motion(self, posx, player):
+        pygame.draw.rect(self.screen, self.COLORS[0], (0, 0, self.width, self.SQUARESIZE))
+        pygame.draw.circle(self.screen, self.COLORS[player],
+                           (int(posx / self.SQUARESIZE) * self.SQUARESIZE + self.OFFSET, self.OFFSET), self.RADIUS)
+        pygame.display.update()
+
+    def show_winner(self, winner):
+        pygame.draw.rect(self.screen, self.COLORS[0], (0, 0, self.width, self.SQUARESIZE))
+        myfont = pygame.font.SysFont("monospace", 60)
+        text = "Player " + str(winner) + " has won!"
+        (text_width, text_height) = myfont.size(text)
+        label = myfont.render(text, 1, self.COLORS[winner])
+        self.screen.blit(label, ((self.width / 2) - text_width / 2, 10))
+        pygame.display.update()
+
+
+if __name__ == "__main__":
+    ROW_COUNT = int(input("Define length of the matrix: "))
+    COLUMN_COUNT = int(input("Define width of the matrix: "))
+
+    # nr_players = int(input("Define the number of players: "))
+    nr_players = 2
+    game = Game(ROW_COUNT, COLUMN_COUNT, nr_players)
+
+    render = render_game(game)
+    render.draw_board()
     current_player = 1
-    while True:
-        column = int(input("Select the column: "))
-        ret = game.move(column, current_player)
-        if ret is None:
-            current_player = (current_player % nr_players) + 1
-            game.print_table()
-        else:
-            print(ret)
-        winner = game.get_winner()
-        if winner is not None:
-            print("The winner is player " + str(winner))
-            break
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    foundWinner = False
+    while not foundWinner:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.MOUSEMOTION:
+                posx = event.pos[0]
+                render.draw_circle_motion(posx, current_player)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                posx = event.pos[0]
+                column = math.floor(int(posx / render.SQUARESIZE))
+                ret = game.move(column, current_player)
+                if ret is None:
+                    current_player = (current_player % nr_players) + 1
+                else:
+                    print(ret)
+                render.draw_board()
+                winner = game.get_winner()
+                if winner is not None:
+                    foundWinner = True
+                    render.show_winner(winner)
+                    pygame.time.wait(3000)
+                    break
+                render.draw_circle_motion(posx, current_player)
