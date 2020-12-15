@@ -71,8 +71,8 @@ def main_menu():
     rows_slider = slider(screen, "Rows", smallfont, width / 2 - 124, 75, 5, 3, 10)
     columns_slider = slider(screen, "Columns", smallfont, width / 2 - 124, 200, 7, 3, 10)
     players_slider = slider(screen, "Players", smallfont, width / 2 - 124, 325, 2, 1, 4)
-
     start = False
+    next = False
     while not start:
         screen.fill((140, 235, 52))
         click = False
@@ -83,24 +83,44 @@ def main_menu():
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 if ev.button == 1:
                     click = True
-
         mouse = pygame.mouse.get_pos()
-        columns_slider.render()
-        rows_slider.render()
-        players_slider.render()
+        if not next:
+            columns_slider.render()
+            rows_slider.render()
+            players_slider.render()
 
-        next_button = pygame.Rect(width / 2 - 75, 450, 150, 75)
-        pygame.draw.rect(screen, (255, 255, 255), next_button)
-        text_render = smallfont.render("Next", True, (0, 0, 0))
-        screen.blit(text_render, (width / 2 - 75 + 40, 470))
+            next_button = pygame.Rect(width / 2 - 75, 450, 150, 75)
+            pygame.draw.rect(screen, (255, 255, 255), next_button)
+            text_render = smallfont.render("Next", True, (0, 0, 0))
+            screen.blit(text_render, (width / 2 - 75 + 40, 470))
 
-        if click == True:
-            columns_slider.press_button(mouse)
-            rows_slider.press_button(mouse)
-            players_slider.press_button(mouse)
-            if next_button.collidepoint(mouse):
-                start = True
-        # updates the frames of the game
+            if click == True:
+                columns_slider.press_button(mouse)
+                rows_slider.press_button(mouse)
+                players_slider.press_button(mouse)
+                if next_button.collidepoint(mouse):
+                    next = True
+                    ai_slider = slider(screen, "AI", smallfont, width / 2 - 124, 200, 0, 0, players_slider.nr)
+            # updates the frames of the game
+        else:
+            ai_slider.render()
+            prev_button = pygame.Rect(width / 2 - 75, 325, 150, 75)
+            pygame.draw.rect(screen, (255, 255, 255), prev_button)
+            text_render = smallfont.render("Prev", True, (0, 0, 0))
+            screen.blit(text_render, (width / 2 - 75 + 40, 345))
+
+            start_button = pygame.Rect(width / 2 - 75, 450, 150, 75)
+            pygame.draw.rect(screen, (255, 255, 255), start_button)
+            text_render = smallfont.render("Start", True, (0, 0, 0))
+            screen.blit(text_render, (width / 2 - 75 + 40, 470))
+            if click == True:
+                ai_slider.press_button(mouse)
+                if prev_button.collidepoint(mouse):
+                    next = False
+                if start_button.collidepoint(mouse):
+                    start = True
+
+
         pygame.display.update()
 
-    return (rows_slider.nr, columns_slider.nr, players_slider.nr)
+    return (rows_slider.nr, columns_slider.nr, players_slider.nr, ai_slider.nr)

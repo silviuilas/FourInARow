@@ -3,13 +3,15 @@ import sys
 
 import numpy
 import pygame
+
 import menu
+
 
 class Game:
     table = []
 
     def __init__(self, n, m, nr_players):
-        if n <= 1 or m <= 1 or nr_players <= 1:
+        if n <= 1 or m <= 1 or nr_players <= 0:
             raise Exception("The game __init__ parameters are wrong")
         self.n = n
         self.m = m
@@ -100,7 +102,7 @@ class render_game:
 
 
 if __name__ == "__main__":
-    ROW_COUNT,COLUMN_COUNT,nr_players = menu.main_menu()
+    ROW_COUNT, COLUMN_COUNT, nr_players, ai_nr = menu.main_menu()
     game = Game(ROW_COUNT, COLUMN_COUNT, nr_players)
     render = render_game(game)
     render.draw_board()
