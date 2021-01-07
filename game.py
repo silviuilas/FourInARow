@@ -1,6 +1,7 @@
 import numpy
 import pygame
 
+
 class Game:
     table = []
 
@@ -71,8 +72,11 @@ class Game:
                 winner = self.get_winner()
                 if winner is not None:
                     found_winner = True
-                    pygame.time.wait(3000)
+                    render.show_winner(winner)
+                    pygame.time.wait(5000)
                     break
+        self.table = numpy.zeros((self.n, self.m), dtype=int)
+        self.current_player = 1
 
     def print_table(self):
         for i in range(self.n):
