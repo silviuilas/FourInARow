@@ -1,4 +1,5 @@
 import math
+import random
 import sys
 
 import numpy
@@ -10,7 +11,7 @@ import menu
 class Game:
     table = []
 
-    def __init__(self, n, m, nr_players):
+    def __init__(self, n, m, nr_players, ai_nr):
         if n <= 1 or m <= 1 or nr_players <= 0:
             raise Exception("The game __init__ parameters are wrong")
         self.n = n
@@ -18,6 +19,7 @@ class Game:
         self.table = numpy.zeros((n, m), dtype=int)
         self.nr_players = nr_players
         self.current_player = 1
+        self.ai_nr = ai_nr
 
     def move(self, column, player_id):
         if self.current_player != player_id:
@@ -52,13 +54,30 @@ class Game:
                     cnt += 1
                     if cnt == 4:
                         return v
-
+                else:
+                    cnt = 0
+                    last_player = v
         # check if the table is full
         for i in range(self.n):
             for j in range(self.m):
                 if self.table[i][j] == 0:
                     return None
         return -1
+
+    def ai_move(self, difficulty):
+        if current_player < (self.nr_players - self.ai_nr) + 1:
+            return False
+        col = int(random.random() * self.m)
+        pygame.time.wait(500)
+        while self.move(col, self.current_player) is not None:
+            col = int(random.random() * self.m)
+        return True
+
+    def player_move(self, column, player):
+        if player < (self.nr_players - self.ai_nr) + 1:
+            return self.move(column, player)
+        else:
+            return "It's the turn of the computer"
 
     def print_table(self):
         for i in range(self.n):
@@ -114,11 +133,12 @@ class render_game:
 
 if __name__ == "__main__":
     ROW_COUNT, COLUMN_COUNT, nr_players, ai_nr = menu.main_menu()
-    game = Game(ROW_COUNT, COLUMN_COUNT, nr_players)
+    game = Game(ROW_COUNT, COLUMN_COUNT, nr_players, ai_nr)
     render = render_game(game)
     render.draw_board()
-    current_player = 1
+    current_player = game.current_player
     foundWinner = False
+    posx = 0
     while not foundWinner:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -129,13 +149,25 @@ if __name__ == "__main__":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 posx = event.pos[0]
                 column = math.floor(int(posx / render.SQUARESIZE))
-                ret = game.move(column, current_player)
-                if ret is None:
-                    current_player = (current_player % nr_players) + 1
-                else:
+                ret = game.player_move(column, current_player)
+                if ret is not None:
                     print(ret)
-                render.draw_board()
+                current_player = game.current_player
+
                 winner = game.get_winner()
+                render.draw_board()
+                if winner is not None:
+                    foundWinner = True
+                    render.show_winner(winner)
+                    pygame.time.wait(5000)
+                    break
+                render.draw_circle_motion(posx, current_player)
+        for i in range(ai_nr):
+            if game.ai_move(2):
+                current_player = game.current_player
+
+                winner = game.get_winner()
+                render.draw_board()
                 if winner is not None:
                     foundWinner = True
                     render.show_winner(winner)
