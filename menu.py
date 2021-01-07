@@ -69,7 +69,7 @@ def main_menu():
     text_columns = smallfont.render('Columns', True, color)
 
     rows_slider = slider(screen, "Rows", smallfont, width / 2 - 124, 75, 5, 3, 10)
-    columns_slider = slider(screen, "Columns", smallfont, width / 2 - 124, 200, 7, 3, 10)
+    columns_slider = slider(screen, "Columns", smallfont, width / 2 - 124, 200, 7, 5, 10)
     players_slider = slider(screen, "Players", smallfont, width / 2 - 124, 325, 2, 1, 4)
     start = False
     next = False

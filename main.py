@@ -52,7 +52,13 @@ class Game:
                     cnt += 1
                     if cnt == 4:
                         return v
-        return None
+
+        # check if the table is full
+        for i in range(self.n):
+            for j in range(self.m):
+                if self.table[i][j] == 0:
+                    return None
+        return -1
 
     def print_table(self):
         for i in range(self.n):
@@ -93,10 +99,15 @@ class render_game:
 
     def show_winner(self, winner):
         pygame.draw.rect(self.screen, self.COLORS[0], (0, 0, self.width, self.SQUARESIZE))
-        myfont = pygame.font.SysFont("monospace", 60)
-        text = "Player " + str(winner) + " has won!"
+        myfont = pygame.font.SysFont("monospace", 50)
+        if winner == -1:
+            text = "It's a draw!"
+            label = myfont.render(text, 1, (255, 255, 255))
+        else:
+            text = "Player " + str(winner) + " has won!"
+            label = myfont.render(text, 1, self.COLORS[winner])
         (text_width, text_height) = myfont.size(text)
-        label = myfont.render(text, 1, self.COLORS[winner])
+
         self.screen.blit(label, ((self.width / 2) - text_width / 2, 10))
         pygame.display.update()
 
