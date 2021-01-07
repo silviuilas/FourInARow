@@ -13,6 +13,32 @@ class Player:
     def move(self, column):
         return self.game.move(column, self.name)
 
+    def get_score(self):
+        current_score = 0
+        for n in self.game.transform_table():
+            cnt = 0
+            last_player = 0
+            if len(n) >= 4:
+                for v in n.tolist():
+                    if v != 0:
+                        if last_player != v:
+                            cnt = 0
+                            last_player = v
+                        cnt += 1
+                        if last_player == self.name:
+                            current_score += pow(cnt, 2)
+                        else:
+                            current_score -= pow(cnt, 3)
+                        if cnt == 4:
+                            if last_player == self.name:
+                                return 999999999
+                            else:
+                                return -999999999
+                    else:
+                        cnt = 0
+                        last_player = v
+        return current_score
+
 
 class Human(Player):
     def __init__(self, game, name, render):
@@ -46,7 +72,40 @@ class AI(Player):
         self.level = level
 
     def make_move(self):
-        col = int(random.random() * self.game.m)
+        # col = int(random.random() * self.game.m)
+        col = self.min_max(self.level, 0)
         while self.move(col) is not None:
             col = int(random.random() * self.game.m)
         return True
+
+    def min_max(self, max_depth, current_depth):
+        mvs = self.game.generate_possible_moves()
+        if self.game.remaining_spots == 0 or current_depth == max_depth or len(mvs) == 0:
+            return self.get_score()
+
+        vec = []
+        for mv in mvs:
+            current_player = self.game.current_player
+            self.game.move(mv, current_player)
+            ras = self.min_max(max_depth, current_depth + 1)
+            self.game.undo_move(mv, current_player)
+            vec.append(ras)
+
+        maxi = -9999999
+        maxi_i = -1
+        mini = 9999999
+        mini_i = -1
+        for i in range(len(vec)):
+            if vec[i] >= maxi:
+                maxi = vec[i]
+                maxi_i = i
+            if vec[i] <= mini:
+                mini = vec[i]
+                mini_i = i
+        if current_depth != 0:
+            if current_depth % 2 == 0:
+                return vec[maxi_i]
+            else:
+                return vec[mini_i]
+        else:
+            return maxi_i

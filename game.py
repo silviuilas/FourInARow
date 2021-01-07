@@ -14,6 +14,7 @@ class Game:
         self.nr_players = 0
         self.players = []
         self.current_player = 1
+        self.remaining_spots = n * m
 
     def add_player(self, player):
         self.players.append(player)
@@ -31,8 +32,30 @@ class Game:
             if i == self.n - 1:
                 return "The move is invalid"
         self.current_player = (self.current_player % self.nr_players) + 1
+        self.remaining_spots -= 1
 
-    def get_winner(self):
+    def undo_move(self, column, player_id):
+        for i in range(self.n):
+            if self.table[i][column] == player_id:
+                self.table[i][column] = 0
+                break
+            elif self.table[i][column] != 0:
+                raise Exception("Something is wrong, the undo can't take place now")
+            if i == self.n - 1:
+                raise Exception("The undo move is invalid")
+        self.current_player -= 1
+        if self.current_player == 0:
+            self.current_player = self.nr_players
+        self.remaining_spots += 1
+
+    def generate_possible_moves(self):
+        mvs = []
+        for i in range(self.m):
+            if self.table[0][i] == 0:
+                mvs.append(i)
+        return mvs
+
+    def transform_table(self):
         diags = [self.table[::-1, :].diagonal(i) for i in range(-self.table.shape[0] + 1, self.table.shape[1])]
         diags.extend(self.table.diagonal(i) for i in range(self.table.shape[1] - 1, -self.table.shape[0], -1))
         for i in range(self.n):
@@ -40,8 +63,11 @@ class Game:
         aux = numpy.rot90(self.table)
         for i in range(len(aux)):
             diags.extend([aux[i]])
+        return diags
 
-        for n in diags:
+    def get_winner(self):
+        trns = self.transform_table()
+        for n in trns:
             cnt = 0
             last_player = 0
             for v in n.tolist():
@@ -55,11 +81,8 @@ class Game:
                 else:
                     cnt = 0
                     last_player = v
-        # check if the table is full
-        for i in range(self.n):
-            for j in range(self.m):
-                if self.table[i][j] == 0:
-                    return None
+        if self.remaining_spots != 0:
+            return None
         return -1
 
     def start_game(self, render):
