@@ -20,6 +20,7 @@ class Game:
         self.players.append(player)
         self.nr_players = len(self.players)
 
+    # Validate and make a player move if possible
     def move(self, column, player_id):
         if self.current_player != player_id:
             raise Exception("Error, it isn't this players turn")
@@ -34,6 +35,7 @@ class Game:
         self.current_player = (self.current_player % self.nr_players) + 1
         self.remaining_spots -= 1
 
+    # Undo a specific move. Warning. It doesn't check that it's the last move.
     def undo_move(self, column, player_id):
         for i in range(self.n):
             if self.table[i][column] == player_id:
@@ -48,6 +50,7 @@ class Game:
             self.current_player = self.nr_players
         self.remaining_spots += 1
 
+    # Returns a list of the remaining possible moves.
     def generate_possible_moves(self):
         mvs = []
         for i in range(self.m):
@@ -55,15 +58,19 @@ class Game:
                 mvs.append(i)
         return mvs
 
+    # Transforms the table in a way that it is easy to check how many pieces in a row there are
     def transform_table(self):
-        diags = [self.table[::-1, :].diagonal(i) for i in range(-self.table.shape[0] + 1, self.table.shape[1])]
-        diags.extend(self.table.diagonal(i) for i in range(self.table.shape[1] - 1, -self.table.shape[0], -1))
+        # Make a list of lists that contains all the diagonals
+        list_of_lists = [self.table[::-1, :].diagonal(i) for i in range(-self.table.shape[0] + 1, self.table.shape[1])]
+        list_of_lists.extend(self.table.diagonal(i) for i in range(self.table.shape[1] - 1, -self.table.shape[0], -1))
+        # Extend that list so it has all the rows
         for i in range(self.n):
-            diags.extend([self.table[i]])
+            list_of_lists.extend([self.table[i]])
+        # Further extend it to have all the columns
         aux = numpy.rot90(self.table)
         for i in range(len(aux)):
-            diags.extend([aux[i]])
-        return diags
+            list_of_lists.extend([aux[i]])
+        return list_of_lists
 
     def get_winner(self):
         trns = self.transform_table()

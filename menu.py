@@ -1,6 +1,7 @@
 import pygame
 
 
+# An object useful when you need to select from a specific number range in the UI
 class slider:
     def render(self):
         bigfont = pygame.font.SysFont('monospace', 60)
@@ -26,7 +27,6 @@ class slider:
         self.nr = nr
         self.min = min
         self.max = max
-        bigfont = pygame.font.SysFont('monospace', 60)
 
         self.button_left = pygame.Rect(x, y, 50, 100)
         self.button_right = pygame.Rect(x + 50 + self.text_size[0], y, 50, 100)
@@ -57,16 +57,11 @@ def main_menu():
     pygame.init()
     res = (720, 720)
     screen = pygame.display.set_mode(res)
-    color = (255, 255, 255)
-    color_light = (170, 170, 170)
-    color_dark = (100, 100, 100)
+    color = (140, 235, 52)
     width = screen.get_width()
     height = screen.get_height()
 
     smallfont = pygame.font.SysFont('Corbel', 35)
-
-    text_rows = smallfont.render('Rows', True, color)
-    text_columns = smallfont.render('Columns', True, color)
 
     rows_slider = slider(screen, "Rows", smallfont, width / 2 - 124, 75, 5, 3, 10)
     columns_slider = slider(screen, "Columns", smallfont, width / 2 - 124, 200, 7, 5, 10)
@@ -74,7 +69,7 @@ def main_menu():
     start = False
     next = False
     while not start:
-        screen.fill((140, 235, 52))
+        screen.fill(color)
         click = False
         for ev in pygame.event.get():
             if ev.type == pygame.QUIT:
@@ -101,7 +96,7 @@ def main_menu():
                 if next_button.collidepoint(mouse):
                     next = True
                     ai_slider = slider(screen, "AI", smallfont, width / 2 - 124, 75, 0, 0, players_slider.nr)
-                    level_slider = slider(screen, "Level", smallfont, width / 2 - 124, 200, 1, 1, 3)
+                    level_slider = slider(screen, "Level", smallfont, width / 2 - 124, 200, 0, 1, 3)
             # updates the frames of the game
         else:
             ai_slider.render()
@@ -125,4 +120,4 @@ def main_menu():
 
         pygame.display.update()
 
-    return (rows_slider.nr, columns_slider.nr, players_slider.nr, ai_slider.nr, level_slider.nr)
+    return rows_slider.nr, columns_slider.nr, players_slider.nr, ai_slider.nr, level_slider.nr

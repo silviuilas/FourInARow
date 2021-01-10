@@ -5,7 +5,7 @@ class RenderGame:
     def __init__(self, n, m):
         pygame.init()
 
-        self.COLORS = [(0, 0, 0), (255, 0, 0), (255, 255, 0), (0, 255, 0), (0, 255, 255)]
+        self.COLORS = [(0, 0, 0), (255, 0, 0), (0, 120, 255), (0, 0, 255), (255, 100, 255)]
         self.SQUARESIZE = 100
 
         self.n = n
@@ -21,7 +21,7 @@ class RenderGame:
         self.OFFSET = int(self.SQUARESIZE / 2)
         for r in range(self.n):
             for c in range(self.m):
-                pygame.draw.rect(self.screen, (0, 0, 255),
+                pygame.draw.rect(self.screen, (140, 235, 52),
                                  (c * self.SQUARESIZE, (r + 1) * self.SQUARESIZE, self.SQUARESIZE, self.SQUARESIZE))
                 color = self.COLORS[game.table[r][c]]
                 pygame.draw.circle(self.screen, color,
@@ -29,6 +29,7 @@ class RenderGame:
                                    self.RADIUS)
         pygame.display.update()
 
+    # Draw the circle that indicates where the move is gonna be.
     def draw_circle_motion(self, posx, player):
         pygame.draw.rect(self.screen, self.COLORS[0], (0, 0, self.width, self.SQUARESIZE))
         pygame.draw.circle(self.screen, self.COLORS[player],
