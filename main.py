@@ -6,6 +6,7 @@ import player
 import render_game as rg
 
 if __name__ == "__main__":
+
     # Take the arguments from the system
     if len(sys.argv[1:]) is not 0:
         args = sys.argv[1:-1].copy()

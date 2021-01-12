@@ -13,8 +13,8 @@ class Player:
     def move(self, column):
         return self.game.move(column, self.name)
 
-    # Calculates the score of the player in relationship with other players.
     def get_score(self):
+        # Calculates the score of the player in relationship with other players and returns it.
         current_score = 0
         for n in self.game.transform_table():
             cnt = 0
@@ -46,8 +46,11 @@ class Human(Player):
         super().__init__(game, name)
         self.render = render
 
-    # Using the ui, the human player selects a move and makes it
     def make_move(self):
+        """
+            Using the ui, the human player selects a move and makes it directly on the game.
+            :return Nothing
+        """
         render = self.render
         found_move = False
         while not found_move:
@@ -75,6 +78,10 @@ class AI(Player):
 
     # The AI makes a move based on it's level
     def make_move(self):
+        """
+            The AI makes a move based on it's level
+            :return Nothing
+        """
         if self.level == 0:
             col = int(random.random() * self.game.m)
         else:
@@ -84,9 +91,15 @@ class AI(Player):
             col = self.min_max(aux, 0)
         while self.move(col) is not None:
             col = int(random.random() * self.game.m)
-        return True
 
     def min_max(self, max_depth, current_depth):
+        """
+            The min max algorithm that selects a move
+            :param max_depth: The maximum depth that the min_max algorithm can get to
+            :param current_depth: The current depth of the algorithm
+            :return res: The selected move
+
+        """
         mvs = self.game.generate_possible_moves()
         if self.game.remaining_spots == 0 or current_depth == max_depth or len(mvs) == 0:
             return self.get_score()

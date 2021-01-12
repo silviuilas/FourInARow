@@ -17,6 +17,11 @@ class RenderGame:
         self.screen = pygame.display.set_mode(size)
 
     def draw_board(self, game):
+        """
+            Draw the game on screen screen.
+            :param game: The game you want to render on the screen
+            :return: Nothing, the information is updated on the screen.
+        """
         self.RADIUS = int(self.SQUARESIZE / 2) - 5
         self.OFFSET = int(self.SQUARESIZE / 2)
         for r in range(self.n):
@@ -29,14 +34,24 @@ class RenderGame:
                                    self.RADIUS)
         pygame.display.update()
 
-    # Draw the circle that indicates where the move is gonna be.
     def draw_circle_motion(self, posx, player):
+        """
+            Draw the circle that indicates where the move is gonna be.
+            :param posx: The x coord based on screen render
+            :parm player: The id of the played that needs to be rendered
+            :return: Nothing, the information is updated on the screen.
+        """
         pygame.draw.rect(self.screen, self.COLORS[0], (0, 0, self.width, self.SQUARESIZE))
         pygame.draw.circle(self.screen, self.COLORS[player],
                            (int(posx / self.SQUARESIZE) * self.SQUARESIZE + self.OFFSET, self.OFFSET), self.RADIUS)
         pygame.display.update()
 
     def show_winner(self, winner):
+        """
+            Show the winner of the game on the screen
+            :param winner: The winner id
+            :return: Nothing, the information is updated on the screen.
+        """
         pygame.draw.rect(self.screen, self.COLORS[0], (0, 0, self.width, self.SQUARESIZE))
         myfont = pygame.font.SysFont("monospace", 50)
         if winner == -1:

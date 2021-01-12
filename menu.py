@@ -4,6 +4,7 @@ import pygame
 # An object useful when you need to select from a specific number range in the UI
 class slider:
     def render(self):
+        # Redraw of the slider on the screen.
         bigfont = pygame.font.SysFont('monospace', 60)
         self.nr_text_render = bigfont.render(str(self.nr), True, (255, 255, 255))
         self.nr_text_size = bigfont.size(str(self.nr))
@@ -34,6 +35,11 @@ class slider:
         self.render()
 
     def check_collide(self, coords):
+        """
+            Checks if the mouse collides with one of the button.
+            :param coords: The mouse coordinates
+            :return rez: 1 or 2 if the mouse collides with something or 0 if not
+        """
         if self.button_left.collidepoint(coords):
             return 1
         if self.button_right.collidepoint(coords):
@@ -41,6 +47,11 @@ class slider:
         return 0
 
     def press_button(self, coords):
+        """
+            Check if a button is pressed and if it is modify the coresponding number.
+            :param coords: The mouse coordinates
+            :return Nothing
+        """
         if self.check_collide(coords) == 1:
             if self.nr > self.min:
                 self.nr -= 1
@@ -54,6 +65,7 @@ class slider:
 
 
 def main_menu():
+    # Draw the main menu on the screen
     pygame.init()
     res = (720, 720)
     screen = pygame.display.set_mode(res)
